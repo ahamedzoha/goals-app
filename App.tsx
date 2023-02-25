@@ -7,19 +7,24 @@ import {
   TextInput,
   FlatList,
 } from "react-native"
+import Goal, { GoalType } from "./components/Goal"
+import GoalInput from "./components/GoalInput"
 
 export default function App() {
-  const [enteredGoal, setEnteredGoal] = useState("")
-  const [courseGoals, setCourseGoals] = useState<string[]>([])
+  const [enteredGoal, setEnteredGoal] = useState<string>("")
+  const [courseGoals, setCourseGoals] = useState<GoalType[]>([])
 
   const goalSubmitHandler = () => {
-    setCourseGoals((currentGoals) => [...currentGoals, enteredGoal])
+    setCourseGoals((currentGoals) => [
+      ...currentGoals,
+      { text: enteredGoal, key: Math.random().toString() },
+    ])
     setEnteredGoal("")
   }
 
-  const deleteGoal = (goal: string) => {
+  const deleteGoal = (goal: GoalType) => {
     setCourseGoals((currentGoals) => {
-      return currentGoals.filter((goals) => goals !== goal)
+      return currentGoals.filter((goals) => goals.key !== goal.key)
     })
   }
 
@@ -27,17 +32,12 @@ export default function App() {
   return (
     <View style={styles.appContainer}>
       {/* Input element */}
-      <View style={styles.inputContainer}>
-        <TextInput
-          onChangeText={(text) => setEnteredGoal(text)}
-          value={enteredGoal}
-          placeholder="Your course goal"
-          style={styles.goalInput}
-          // on enter press
-          onSubmitEditing={() => goalSubmitHandler()}
-        />
-        <Button onPress={() => goalSubmitHandler()} title="Add Goal" />
-      </View>
+      <GoalInput
+        handleOnChange={setEnteredGoal}
+        goalSubmitHandler={goalSubmitHandler}
+        value={enteredGoal}
+      />
+
       <View style={styles.goalsContainer}>
         {/* List of goals */}
         <Text style={styles.containerHeading}>Goals</Text>
@@ -45,16 +45,7 @@ export default function App() {
         <FlatList
           data={courseGoals}
           renderItem={(itemData) => (
-            <View
-              key={itemData.item + Math.random}
-              style={styles.listContainer}
-            >
-              <Text style={styles.goalItemText}>{itemData.item}</Text>
-              <Button
-                title="Delete"
-                onPress={() => deleteGoal(itemData.item)}
-              />
-            </View>
+            <Goal goal={itemData.item} deleteGoal={deleteGoal} />
           )}
         />
       </View>
@@ -70,22 +61,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     // backgroundColor: "green",
   },
-  inputContainer: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
-  },
-  goalInput: {
-    width: "70%",
-    borderWidth: 1,
-    borderRadius: 5,
-    borderColor: "grey",
-    marginRight: 10,
-    padding: 8,
-  },
+
   goalsContainer: {
     flex: 4,
     paddingTop: 30,
@@ -95,18 +71,5 @@ const styles = StyleSheet.create({
   containerHeading: {
     fontSize: 45,
     fontWeight: "bold",
-  },
-  listContainer: {
-    backgroundColor: "#aaffaa",
-    marginVertical: 10,
-    marginRight: 5,
-    borderRadius: 5,
-    padding: 10,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  goalItemText: {
-    fontSize: 16,
   },
 })
