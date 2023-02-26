@@ -1,4 +1,4 @@
-import { View, Text, Button, StyleSheet } from "react-native"
+import { View, Text, Button, StyleSheet, Pressable } from "react-native"
 import { FC } from "react"
 
 export interface GoalType {
@@ -12,8 +12,13 @@ interface GoalProps {
 const Goal: FC<GoalProps> = ({ goal, deleteGoal }) => {
   return (
     <View key={goal.key} style={styles.listContainer}>
-      <Text style={styles.goalItemText}>{goal.text}</Text>
-      <Button title="Delete" onPress={() => deleteGoal(goal)} />
+      <Pressable
+        onPress={() => deleteGoal(goal)}
+        android_ripple={{ color: "#dddddd" }}
+        style={({ pressed }) => pressed && styles.pressedItem}
+      >
+        <Text style={styles.goalItemText}>{goal.text}</Text>
+      </Pressable>
     </View>
   )
 }
@@ -26,12 +31,14 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     marginRight: 5,
     borderRadius: 5,
-    padding: 10,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
   },
+
+  pressedItem: {
+    opacity: 0.5,
+  },
+
   goalItemText: {
+    padding: 8,
     fontSize: 16,
   },
 })
