@@ -11,6 +11,7 @@ import Goal, { GoalType } from "./components/Goal"
 import GoalInput from "./components/GoalInput"
 
 export default function App() {
+  const [isAddMode, setIsAddMode] = useState<boolean>(false)
   const [enteredGoal, setEnteredGoal] = useState<string>("")
   const [courseGoals, setCourseGoals] = useState<GoalType[]>([])
 
@@ -28,11 +29,25 @@ export default function App() {
     })
   }
 
+  // Might introduce a bug later
+  const handleAddModeChange = () => {
+    setEnteredGoal("")
+    setIsAddMode((currentMode) => !currentMode)
+  }
+
   console.log(enteredGoal)
   return (
     <View style={styles.appContainer}>
+      <Button
+        title="Add New Goal"
+        color="#5e0acc"
+        onPress={() => handleAddModeChange()}
+      />
+
       {/* Input element */}
       <GoalInput
+        isVisible={isAddMode}
+        handleAddModeChange={handleAddModeChange}
         handleOnChange={setEnteredGoal}
         goalSubmitHandler={goalSubmitHandler}
         value={enteredGoal}
